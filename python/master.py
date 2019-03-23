@@ -3,18 +3,15 @@ from trivia import Game
 from random import randrange, seed
 
 
-
-
-for counter in range(1, 1000):
-    seed(counter)
+def play(players, seedValue):
+    seed(seedValue)
 
     not_a_winner = False
 
     game = Game()
 
-    game.add('Chet')
-    game.add('Pat')
-    game.add('Sue')
+    for player in players:
+        game.add(player)
 
     while True:
         
@@ -26,3 +23,7 @@ for counter in range(1, 1000):
             not_a_winner = game.was_correctly_answered()
         
         if not not_a_winner: break
+
+
+for counter in range(1, 1000):
+    play(['Chet', 'Pat', 'Sue'], counter)
