@@ -15,12 +15,7 @@ def play(players, seedValue):
 
     while True:
         
-        game.roll(randrange(5) + 1)
-
-        if randrange(9) == 7:
-            not_a_winner = game.wrong_answer()
-        else:
-            not_a_winner = game.was_correctly_answered()
+        not_a_winner = game.play()
         
         if not not_a_winner: break
 
