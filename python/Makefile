@@ -3,7 +3,7 @@ check:
 	diff this_time.txt golden_master.txt
 
 coverage:
-	coverage run master.py
+	coverage run master.py >/dev/null
 	coverage report
 	coverage html
 
