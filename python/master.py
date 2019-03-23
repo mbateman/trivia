@@ -25,5 +25,9 @@ def play(players, seedValue):
         if not not_a_winner: break
 
 
+# try to play with one player only
+play(["Chet"], 0)
+
+# 1000 iterations
 for counter in range(1, 1000):
     play(['Chet', 'Pat', 'Sue'], counter)
