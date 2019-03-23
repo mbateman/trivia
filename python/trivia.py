@@ -38,39 +38,40 @@ class Game:
     @property
     def how_many_players(self):
         return len(self.players)
-    
+
+    def is_odd(self, roll):
+        return roll % 2 != 0
+
     def roll(self, roll):
         print "%s is the current player" % self.players[self.current_player]
         print "They have rolled a %s" % roll
         
         if self.in_penalty_box[self.current_player]:
-            if roll % 2 != 0:
+            if self.is_odd(roll):
                 self.is_getting_out_of_penalty_box = True
-                
                 print "%s is getting out of the penalty box" % self.players[self.current_player]
-                self.places[self.current_player] = self.places[self.current_player] + roll
-                if self.places[self.current_player] > 11:
-                    self.places[self.current_player] = self.places[self.current_player] - 12
-                
-                print self.players[self.current_player] + \
-                            '\'s new location is ' + \
-                            str(self.places[self.current_player])
-                print "The category is %s" % self._current_category
-                self._ask_question()
             else:
                 print "%s is not getting out of the penalty box" % self.players[self.current_player]
                 self.is_getting_out_of_penalty_box = False
-        else:
+
+        if self.can_play():
             self.places[self.current_player] = self.places[self.current_player] + roll
-            if self.places[self.current_player] > 11:
-                self.places[self.current_player] = self.places[self.current_player] - 12
+            self.board_size = 12
+            if self.places[self.current_player] >= self.board_size:
+                self.wrap_board()
             
             print self.players[self.current_player] + \
                         '\'s new location is ' + \
                         str(self.places[self.current_player])
             print "The category is %s" % self._current_category
             self._ask_question()
-    
+
+    def wrap_board(self):
+        self.places[self.current_player] = self.places[self.current_player] - self.board_size
+
+    def can_play(self):
+        return not self.in_penalty_box[self.current_player] or self.is_getting_out_of_penalty_box
+
     def _ask_question(self):
         if self._current_category == 'Pop': print self.pop_questions.pop(0)
         if self._current_category == 'Science': print self.science_questions.pop(0)
@@ -92,48 +93,48 @@ class Game:
 
     def was_correctly_answered(self):
         if self.in_penalty_box[self.current_player]:
-            if self.is_getting_out_of_penalty_box:
-                print 'Answer was correct!!!!'
-                self.coinTally[self.current_player] += 1
-                print self.players[self.current_player] + \
-                    ' now has ' + \
-                    str(self.coinTally[self.current_player]) + \
-                    ' Gold Coins.'
-                
-                winner = self._did_player_win()
-                self.current_player += 1
-                if self.current_player == len(self.players): self.current_player = 0
-                
-                return winner
-            else:
-                self.current_player += 1
-                if self.current_player == len(self.players): self.current_player = 0
+            if not self.is_getting_out_of_penalty_box:
+                self.next_player()
                 return True
-            
-            
-            
+
+            else:
+
+                print 'Answer was correct!!!!'
+                self.update_coin_tally()
+
+                winner = self._did_player_win()
+                self.next_player()
+
+                return winner
+
+
         else:
-            
+
             print "Answer was corrent!!!!"
-            self.coinTally[self.current_player] += 1
-            print self.players[self.current_player] + \
-                ' now has ' + \
-                str(self.coinTally[self.current_player]) + \
-                ' Gold Coins.'
-            
+            self.update_coin_tally()
+
             winner = self._did_player_win()
-            self.current_player += 1
-            if self.current_player == len(self.players): self.current_player = 0
-            
+            self.next_player()
+
             return winner
-    
+
+    def next_player(self):
+        self.current_player += 1
+        if self.current_player == len(self.players): self.current_player = 0
+
+    def update_coin_tally(self):
+        self.coinTally[self.current_player] += 1
+        print self.players[self.current_player] + \
+              ' now has ' + \
+              str(self.coinTally[self.current_player]) + \
+              ' Gold Coins.'
+
     def wrong_answer(self):
         print 'Question was incorrectly answered'
         print self.players[self.current_player] + " was sent to the penalty box"
         self.in_penalty_box[self.current_player] = True
-        
-        self.current_player += 1
-        if self.current_player == len(self.players): self.current_player = 0
+
+        self.next_player()
         return True
     
     def _did_player_win(self):
