@@ -24,9 +24,6 @@ class Game:
     def create_rock_question(self, index):
         return "Rock Question %s" % index
     
-    def is_playable(self):
-        return self.how_many_players >= 2
-    
     def add(self, player_name):
         self.players.append(player_name)
         self.places[self.how_many_players] = 0
